@@ -1,14 +1,13 @@
 package de.cxlledjay.easyclicker.gui;
 
 import de.cxlledjay.easyclicker.EasyClicker;
-import de.cxlledjay.easyclicker.clicker.AutoClickerConfig;
+import de.cxlledjay.easyclicker.clicker.Config;
+import de.cxlledjay.easyclicker.clicker.ConfigManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import static de.cxlledjay.easyclicker.EasyClickerClient.clickerConfig;
 
 public class MenuScreen extends Screen {
     public MenuScreen() {
@@ -28,8 +27,8 @@ public class MenuScreen extends Screen {
         // ==========================================
 
         // load current config
-        int currentCpsSetting = clickerConfig.getSpeed();
-        int maxCpsSetting = clickerConfig.getMaxSpeed() - 1;
+        int currentCpsSetting = ConfigManager.getInstance().getSpeed();
+        int maxCpsSetting = ConfigManager.getInstance().getMaxSpeed() - 1;
 
         // 1/3 label
         TextWidget cpsLabel = new TextWidget(Text.literal("Clicks per Second"), this.textRenderer);
@@ -51,7 +50,7 @@ public class MenuScreen extends Screen {
                 cpsSlider.updateFromText((typedCps - 1.0) / ((float) maxCpsSetting));
 
                 // and safe value to config
-                clickerConfig.setSpeed(typedCps);
+                ConfigManager.getInstance().setSpeed(typedCps);
             } catch (NumberFormatException e) {}
         });
 
@@ -68,16 +67,16 @@ public class MenuScreen extends Screen {
         // ==========================================
 
         // cycle between enum states
-        CyclingButtonWidget<AutoClickerConfig.ClickMode> modeButton = CyclingButtonWidget.builder((AutoClickerConfig.ClickMode mode) -> Text.literal(mode.name()))
-                .values(AutoClickerConfig.ClickMode.values())
-                .initially(clickerConfig.getClickMode())
+        CyclingButtonWidget<Config.ClickMode> modeButton = CyclingButtonWidget.builder((Config.ClickMode mode) -> Text.literal(mode.name()))
+                .values(Config.ClickMode.values())
+                .initially(ConfigManager.getInstance().getClickMode())
                 .build(0, 0, 240, 20, Text.literal("Clicking Mode"), (button, newValue) -> {
 
                     // cycle enum
-                    clickerConfig.setClickMode(newValue);
+                    ConfigManager.getInstance().setClickMode(newValue);
 
                     // hide gui
-                    boolean isFast = (newValue == AutoClickerConfig.ClickMode.INDIVIDUAL);
+                    boolean isFast = (newValue == Config.ClickMode.INDIVIDUAL);
 
                     // Instantly hide or show the CPS row!
                     cpsLabel.visible = isFast;
@@ -104,7 +103,7 @@ public class MenuScreen extends Screen {
         // ==========================================
 
         // show correct visibility
-        boolean initialMode = (clickerConfig.getClickMode() == AutoClickerConfig.ClickMode.INDIVIDUAL);
+        boolean initialMode = (ConfigManager.getInstance().getClickMode() == Config.ClickMode.INDIVIDUAL);
         cpsLabel.visible = initialMode;
         cpsSlider.visible = initialMode;
         cpsInput.visible = initialMode;
@@ -138,7 +137,7 @@ public class MenuScreen extends Screen {
     public void close() {
 
         // save config
-        MinecraftClient.getInstance().player.sendMessage(Text.of("saving..."));
+        ConfigManager.save();
 
         // continue as normal
         super.close();
@@ -164,7 +163,7 @@ public class MenuScreen extends Screen {
         @Override
         protected void applyValue() {
             // Slider -> Text Box
-            int draggedCps = (int) Math.round(1.0 + (this.value * (((float) clickerConfig.getMaxSpeed()) - 1.0f )));
+            int draggedCps = (int) Math.round(1.0 + (this.value * (((float) ConfigManager.getInstance().getMaxSpeed()) - 1.0f )));
 
             // Safety check: Only update the text box if the number actually changed.
             // This prevents an infinite loop!
@@ -172,7 +171,7 @@ public class MenuScreen extends Screen {
                 linkedInput.setText(String.valueOf(draggedCps));
 
                 // and safe value to config
-                clickerConfig.setSpeed(draggedCps);
+                ConfigManager.getInstance().setSpeed(draggedCps);
             }
         }
 

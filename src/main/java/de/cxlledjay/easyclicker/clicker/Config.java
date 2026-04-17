@@ -1,9 +1,7 @@
 package de.cxlledjay.easyclicker.clicker;
 
 
-
-
-public class AutoClickerConfig {
+public class Config {
 
 
     public enum ClickMode {
@@ -21,7 +19,7 @@ public class AutoClickerConfig {
 
     // constructor
 
-    public AutoClickerConfig(ClickMode mode, int speed){
+    public Config(ClickMode mode, int speed){
         this.mode = mode;
         this.speed = speed;
     }
@@ -44,6 +42,7 @@ public class AutoClickerConfig {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+        AutoClicker.setCpt(speed); //< must also update the AutoClicker local setting
     }
 
     public int getMaxSpeed() {
@@ -51,6 +50,5 @@ public class AutoClickerConfig {
     }
 
 
-    // persistent saving
 
 }

@@ -25,21 +25,15 @@ public class KeyInputHandler {
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(menu_key.wasPressed()){
-                // TODO: call toggle menu method
+                // show menu screen
                 MinecraftClient.getInstance().setScreen(
                         new MenuScreen()
                 );
-
-                // for now debug prints
-                client.player.sendMessage(Text.literal("pressed menu_key"));
             }
 
             if(toggle_key.wasPressed()){
-                // TODO: call toggle easy clicker method
+                //call toggle easy clicker method
                 AutoClicker.toggleClicker();
-
-                // for now debug prints
-                client.player.sendMessage(Text.literal("pressed toggle_key"));
             }
         });
     }
