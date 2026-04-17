@@ -28,7 +28,7 @@ public class MenuScreen extends Screen {
 
         // load current config
         int currentCpsSetting = ConfigManager.getInstance().getSpeed();
-        int maxCpsSetting = ConfigManager.getInstance().getMaxSpeed() - 1;
+        int maxCpsSetting = ConfigManager.getInstance().getMaxSpeed();
 
         // 1/3 label
         TextWidget cpsLabel = new TextWidget(Text.literal("Clicks per Second"), this.textRenderer);
@@ -38,7 +38,7 @@ public class MenuScreen extends Screen {
         cpsInput.setText(String.valueOf(currentCpsSetting));
 
         // 3/3 slider
-        double startingSliderValue = (currentCpsSetting - 1.0) / ((float) maxCpsSetting);
+        double startingSliderValue = (currentCpsSetting - 1.0) / ((float) maxCpsSetting - 1.0f);
         SyncableSlider cpsSlider = new SyncableSlider(cpsInput, startingSliderValue);
 
         // Attach the listener
@@ -47,7 +47,7 @@ public class MenuScreen extends Screen {
                 // display typed cps
                 int typedCps = Integer.parseInt(text);
                 typedCps = net.minecraft.util.math.MathHelper.clamp(typedCps, 1, maxCpsSetting);
-                cpsSlider.updateFromText((typedCps - 1.0) / ((float) maxCpsSetting));
+                cpsSlider.updateFromText((typedCps - 1.0) / ((float) maxCpsSetting - 1.0f));
 
                 // and safe value to config
                 ConfigManager.getInstance().setSpeed(typedCps);

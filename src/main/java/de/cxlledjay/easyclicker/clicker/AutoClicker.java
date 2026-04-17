@@ -17,18 +17,11 @@ public class AutoClicker {
     private static boolean enabled = false;
 
     // tracking click-speed via leaky bucket
-    private static int cpt = 20;           //< clicks per tick, scaled up by factor 20 / or clicks per second
     private static int cptBucket;                     //< leaky bucket
 
 
 
     // --------------------- <interfaces> ---------------------
-
-    // set clicks per tick value
-    // IMPORTANT: cpt are scaled up by 20, just use cps (clicks per second) value
-    public static void setCpt(int newCpt) {
-        cpt = newCpt;
-    }
 
 
     // enable / disable routine of autoclicker
@@ -66,7 +59,7 @@ public class AutoClicker {
 
         // cleanup
         MinecraftClient.getInstance().options.useKey.setPressed(false);
-        cptBucket = cpt;
+        cptBucket = 0;
     }
 
     private static void enableClicker() {
@@ -97,7 +90,7 @@ public class AutoClicker {
                 client.options.useKey.setPressed(false);
 
                 // fill up bucket
-                cptBucket += cpt;
+                cptBucket += ConfigManager.getInstance().getSpeed();
 
                 // leaky bucket algorithm
                 while(cptBucket >= 20){

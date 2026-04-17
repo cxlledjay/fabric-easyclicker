@@ -13,7 +13,7 @@ public class Config {
     // settings that shall be tracked
     private ClickMode mode;
     private int speed;
-    private final int maxSpeed = 50;
+    private final int maxSpeed = 20;
 
 
 
@@ -42,7 +42,6 @@ public class Config {
 
     public void setSpeed(int speed) {
         this.speed = speed;
-        AutoClicker.setCpt(speed); //< must also update the AutoClicker local setting
     }
 
     public int getMaxSpeed() {
