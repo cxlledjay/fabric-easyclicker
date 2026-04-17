@@ -1,5 +1,6 @@
 package de.cxlledjay.easyclicker.clicker;
 
+import de.cxlledjay.easyclicker.EasyClicker;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -32,6 +33,9 @@ public class AutoClicker {
 
     // enable / disable routine of autoclicker
     public static void toggleClicker() {
+        // safety check
+        if(MinecraftClient.getInstance().player == null) return;
+
         // toggle global variable used inside tick event
         enabled = !enabled;
 
@@ -58,7 +62,7 @@ public class AutoClicker {
         enabled = false;
 
         // display mode change
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("disabling clicker...").formatted(Formatting.BOLD, Formatting.RED));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal(EasyClicker.MOD_ID + " disabled").formatted(Formatting.BOLD, Formatting.RED), true);
 
         // cleanup
         MinecraftClient.getInstance().options.useKey.setPressed(false);
@@ -70,7 +74,7 @@ public class AutoClicker {
         enabled = true;
 
         // display mode change
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("enabling clicker...").formatted(Formatting.BOLD, Formatting.GREEN));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal(EasyClicker.MOD_ID + " enabled").formatted(Formatting.BOLD, Formatting.GREEN), true);
     }
 
 

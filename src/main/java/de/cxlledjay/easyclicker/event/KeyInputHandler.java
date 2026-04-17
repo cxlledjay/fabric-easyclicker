@@ -24,6 +24,8 @@ public class KeyInputHandler {
 
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+
+
             if(menu_key.wasPressed()){
                 // show menu screen
                 MinecraftClient.getInstance().setScreen(
