@@ -1,7 +1,10 @@
 package de.cxlledjay.easyclicker.event;
 
+import de.cxlledjay.easyclicker.clicker.AutoClicker;
+import de.cxlledjay.easyclicker.gui.MenuScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
@@ -23,6 +26,9 @@ public class KeyInputHandler {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(menu_key.wasPressed()){
                 // TODO: call toggle menu method
+                MinecraftClient.getInstance().setScreen(
+                        new MenuScreen()
+                );
 
                 // for now debug prints
                 client.player.sendMessage(Text.literal("pressed menu_key"));
@@ -30,6 +36,7 @@ public class KeyInputHandler {
 
             if(toggle_key.wasPressed()){
                 // TODO: call toggle easy clicker method
+                AutoClicker.toggleClicker();
 
                 // for now debug prints
                 client.player.sendMessage(Text.literal("pressed toggle_key"));
