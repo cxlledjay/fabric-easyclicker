@@ -3,13 +3,13 @@
 	"id": "easyclicker",
 	"version": "${version}",
 	"name": "Easy Clicker",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Lightweight right-click only autoclicker with two modes",
 	"authors": [
-		"Me!"
+		"cxlledjay"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/cxlledjay",
+		"sources": "https://github.com/cxlledjay/fabric-easyclicker"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/easyclicker/icon.png",
