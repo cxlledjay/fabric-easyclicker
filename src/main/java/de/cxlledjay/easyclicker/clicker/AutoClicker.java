@@ -23,7 +23,7 @@ public class AutoClicker {
     // ----- interfaces -----
 
     public static void init() {
-        ClientTickEvents.END_CLIENT_TICK.register(AutoClicker::execute);
+        ClientTickEvents.END_CLIENT_TICK.register(AutoClicker::autoClickerEvent);
     }
 
     public static void toggleClicker() {
@@ -43,61 +43,68 @@ public class AutoClicker {
         }
     }
 
+    public static boolean isEnabled() {
+        return enabled;
+    }
+
+    public static void tickRmbClicker(MinecraftClient client) {
+        rmbClickerExecute(client);
+    }
+
 
 
 
     // ----- auto clicker code -----
 
-    public static void disableClicker(ClientPlayerEntity player) {
+    private static void disableClicker(ClientPlayerEntity player) {
         enabled = false;
-        player.sendMessage(Text.literal(EasyClicker.MOD_ID + " disabled").formatted(Formatting.BOLD, Formatting.RED), true);
-
-        // cleanup
         MinecraftClient.getInstance().options.useKey.setPressed(false);
         rmbBucket = 0;
         rmbInterval = 0;
+        if(player != null) player.sendMessage(Text.literal(EasyClicker.MOD_ID + " disabled").formatted(Formatting.BOLD, Formatting.RED), true);
     }
 
     private static void enableClicker(ClientPlayerEntity player) {
         enabled = true;
-        player.sendMessage(Text.literal(EasyClicker.MOD_ID + " enabled").formatted(Formatting.BOLD, Formatting.GREEN), true);
+        if(player != null) player.sendMessage(Text.literal(EasyClicker.MOD_ID + " enabled").formatted(Formatting.BOLD, Formatting.GREEN), true);
     }
 
+    private static void autoClickerEvent(MinecraftClient client) {
 
-    private static void execute(MinecraftClient client) {
-
-        // disabled => do nothing
-        if(!enabled) return;
+        // only tick when enabled and not when holding
+        if(!enabled || EasyClickerConfig.rmbOnlyWhileHolding) return;
 
         // safety
-        if (client.player == null || client.world == null || client.currentScreen != null) {
-            return;
-        }
+        if (client.player == null || client.world == null || client.currentScreen != null) return;
 
-        // rmb clicker execute
-        if(EasyClickerConfig.rmbEnabled) {
-            // delegate rmb click mode
-            switch (EasyClickerConfig.rmbMode) {
-                case HOLDING -> executeRmbHolding(client);
-                case INDIVIDUAL -> executeRmbIndividual(client);
-                case INTERVAL ->  executeRmbInterval(client);
-            }
-        }
+        // execute rmb clicker
+        if(EasyClickerConfig.rmbEnabled) rmbClickerExecute(client);
 
-        // TODO: lmb clicker execute
-        if(EasyClickerConfig.lmbEnabled) {
-            // TBD
+        // execute lmb clicker
+        if(EasyClickerConfig.lmbEnabled) lmbClickerExecute(client);
+    }
+
+    private static void rmbClickerExecute(MinecraftClient client) {
+        // delegate rmb click mode
+        switch (EasyClickerConfig.rmbMode) {
+            case HOLDING -> executeRmbHolding(client);
+            case INDIVIDUAL -> executeRmbIndividual(client);
+            case INTERVAL ->  executeRmbInterval(client);
         }
     }
 
+    private static void lmbClickerExecute(MinecraftClient client) {
+        // TODO: lmb clicker execute
+    }
+
+
+    // rmb clicker helpers
 
     private static void executeRmbHolding(MinecraftClient client) {
         client.options.useKey.setPressed(true);
     }
 
     private static void executeRmbIndividual(MinecraftClient client) {
-        client.options.useKey.setPressed(false);
-
         // leaky bucket
         rmbBucket += EasyClickerConfig.rmbIndividualCps;
         while(rmbBucket >= 20){
@@ -107,19 +114,12 @@ public class AutoClicker {
     }
 
     private static void executeRmbInterval(MinecraftClient client) {
-        client.options.useKey.setPressed(false);
         // simple timer
         if(++rmbInterval >= EasyClickerConfig.rmbIntervalTime) {
             artificialRightClick(client);
             rmbInterval = 0;
         }
     }
-
-
-
-
-
-
 
     private static void artificialRightClick(MinecraftClient client) {
         // get what player is looking at
@@ -134,6 +134,4 @@ public class AutoClicker {
             client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, blockHit);
         }
     }
-
-
 }
