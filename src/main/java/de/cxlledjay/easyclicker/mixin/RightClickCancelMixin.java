@@ -1,6 +1,5 @@
 package de.cxlledjay.easyclicker.mixin;
 
-import de.cxlledjay.easyclicker.EasyClicker;
 import de.cxlledjay.easyclicker.clicker.AutoClicker;
 import de.cxlledjay.easyclicker.config.EasyClickerConfig;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +17,6 @@ public class RightClickCancelMixin {
             MinecraftClient client = (MinecraftClient) (Object) this;
             boolean rmbHeld = client.options.useKey.isPressed();
             if (rmbHeld) {
-                EasyClicker.LOGGER.info("rmb enabled");
                 AutoClicker.tickRmbClicker(client);
                 ci.cancel();
             }

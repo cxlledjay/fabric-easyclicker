@@ -5,10 +5,13 @@ import de.cxlledjay.easyclicker.config.EasyClickerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
 public class AutoClicker {
@@ -122,16 +125,58 @@ public class AutoClicker {
     }
 
     private static void artificialRightClick(MinecraftClient client) {
-        // get what player is looking at
+        if (client.player == null || client.interactionManager == null) return;
+
         HitResult target = client.crosshairTarget;
 
-        // check if it is a block
-        if (target != null && target.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult blockHit = (BlockHitResult) target;
+        // loop trough hands
+        for (Hand hand : Hand.values()) {
 
-            // place blocks
-            assert client.interactionManager != null;
-            client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, blockHit);
+            // 1. Entity Interaction (e.g., Villager trading, rotating Item Frames, mounting pigs)
+            if (target != null && target.getType() == HitResult.Type.ENTITY) {
+                EntityHitResult entityHit = (EntityHitResult) target;
+                Entity entity = entityHit.getEntity();
+
+                // Try precise location interaction first (required for Armor Stands)
+                ActionResult result = client.interactionManager.interactEntityAtLocation(client.player, entity, entityHit, hand);
+
+                // If that passes, try general entity interaction
+                if (!result.isAccepted()) {
+                    result = client.interactionManager.interactEntity(client.player, entity, hand);
+                }
+
+                // If the interaction succeeded, swing the hand and stop processing
+                if (result.isAccepted()) {
+                    if (result.shouldSwingHand()) client.player.swingHand(hand);
+                    continue;
+                }
+            }
+
+
+            // 2. Block Interaction (e.g., Placing blocks, opening chests, pressing buttons)
+            if (target != null && target.getType() == HitResult.Type.BLOCK) {
+                if (target instanceof BlockHitResult blockHit) {
+                    ActionResult result = client.interactionManager.interactBlock(client.player, hand, blockHit);
+
+                    if (result.isAccepted()) {
+                        if (result.shouldSwingHand()) client.player.swingHand(hand);
+                        continue;
+                    }
+                }
+            }
+
+
+            // 3. Item Use (e.g., Eating food, drinking potions, throwing Ender Pearls, shooting bows)
+            // This runs if the player is looking at air (MISS) OR if looking at a block/entity but holding an item that doesn't interact with it.
+            if (!client.player.getStackInHand(hand).isEmpty()) {
+                ActionResult result = client.interactionManager.interactItem(client.player, hand);
+
+                if (result.isAccepted()) {
+                    if (result.shouldSwingHand()) client.player.swingHand(hand);
+                }
+            }
+
+
         }
     }
 }
