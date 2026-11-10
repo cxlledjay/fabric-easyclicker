@@ -1,6 +1,27 @@
 {
   "key.category.easyclicker.category": "Easy Clicker",
-
   "key.easyclicker.menu": "Open Easy Clicker Menu",
-  "key.easyclicker.toggle": "Toggle Easy Clicker"
+  "key.easyclicker.toggle": "Toggle Easy Clicker",
+
+  "easyclicker.midnightconfig.title": "Easy Clicker Settings",
+
+  "easyclicker.midnightconfig.category.rmb": "Right Click",
+  "easyclicker.midnightconfig.category.lmb": "Left Click",
+
+  "easyclicker.midnightconfig.rmbHeading": "Autoclicker Settings (RMB)",
+  "easyclicker.midnightconfig.rmbEnabled": "Enable Auto Right Click",
+  "easyclicker.midnightconfig.rmbOnlyWhileHolding": "Activate when holding RMB",
+
+  "easyclicker.midnightconfig.rmbModesHeading": "Mode Settings",
+  "easyclicker.midnightconfig.rmbMode": "Click Mode",
+
+  "easyclicker.midnightconfig.enum.RightClickMode.HOLDING": "Holding (Vanilla)",
+  "easyclicker.midnightconfig.enum.RightClickMode.INDIVIDUAL": "Individual CPS",
+  "easyclicker.midnightconfig.enum.RightClickMode.INTERVAL": "Timed Interval",
+
+  "easyclicker.midnightconfig.rmbIndividualCps": "Clicks Per Second (for Individual CPS Mode)",
+  "easyclicker.midnightconfig.rmbIntervalTime": "Interval Time (for Timed Interval Mode)",
+
+  "easyclicker.midnightconfig.lmbHeading": "Autoclicker Settings (LMB)",
+  "easyclicker.midnightconfig.lmbEnabled": "Enable Auto Left Click"
 }

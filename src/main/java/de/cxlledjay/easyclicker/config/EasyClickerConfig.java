@@ -4,6 +4,15 @@ import eu.midnightdust.lib.config.MidnightConfig;
 
 public class EasyClickerConfig extends MidnightConfig {
 
+    // ----- left click config -----
+    // TBD
+    @Comment(category = "lmb", centered = true)
+    public static Comment lmbHeading;
+
+    @Entry(category = "lmb")
+    public static boolean lmbEnabled = true;
+
+
     // ----- right click config -----
 
     // info
@@ -30,20 +39,10 @@ public class EasyClickerConfig extends MidnightConfig {
         INTERVAL
     }
 
-    @Entry(category = "rmb", min = 1, max = 20, isSlider = true)
-    public static int rmbIndividualCps = 5;
+    @Entry(category = "rmb", min = 1, max = 40, isSlider = true)
+    public static int rmbIndividualCps = 1;
 
     @Entry(category = "rmb", min = 1)
     public static int rmbIntervalTime = 1;
-
-
-
-    // ----- left click config -----
-    // TBD
-    @Comment(category = "lmb", centered = true)
-    public static Comment lmbHeading;
-
-    @Entry(category = "lmb")
-    public static boolean lmbEnabled = true;
 
 }
