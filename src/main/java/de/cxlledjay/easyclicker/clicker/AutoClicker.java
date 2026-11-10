@@ -112,6 +112,7 @@ public class AutoClicker {
         rmbBucket += EasyClickerConfig.rmbIndividualCps;
         while(rmbBucket >= 20){
             artificialRightClick(client);
+            forceRaycastUpdate(client);
             rmbBucket -= 20;
         }
     }
@@ -123,6 +124,8 @@ public class AutoClicker {
             rmbInterval = 0;
         }
     }
+
+
 
     private static void artificialRightClick(MinecraftClient client) {
         if (client.player == null || client.interactionManager == null) return;
@@ -178,5 +181,11 @@ public class AutoClicker {
 
 
         }
+    }
+
+    private static void forceRaycastUpdate(MinecraftClient client) {
+        if (client.getCameraEntity() == null || client.player == null) return;
+        double reachDistance = client.player.getBlockInteractionRange();
+        client.crosshairTarget = client.getCameraEntity().raycast(reachDistance, 1.0F, false);
     }
 }

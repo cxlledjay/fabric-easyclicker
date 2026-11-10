@@ -39,7 +39,7 @@ public class EasyClickerConfig extends MidnightConfig {
         INTERVAL
     }
 
-    @Entry(category = "rmb", min = 1, max = 40, isSlider = true)
+    @Entry(category = "rmb", min = 1, max = 100, isSlider = true)
     public static int rmbIndividualCps = 1;
 
     @Entry(category = "rmb", min = 1)
