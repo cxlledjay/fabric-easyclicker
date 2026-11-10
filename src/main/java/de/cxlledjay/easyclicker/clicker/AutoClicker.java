@@ -1,108 +1,127 @@
 package de.cxlledjay.easyclicker.clicker;
 
 import de.cxlledjay.easyclicker.EasyClicker;
+import de.cxlledjay.easyclicker.config.EasyClickerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 
-// singleton instance of the autoclicker
 public class AutoClicker {
 
-    // --------------------- <tracking variables> ---------------------
-    // toggled state tracking
+    // ----- tracking -----
     private static boolean enabled = false;
-
-    // tracking click-speed via leaky bucket
-    private static int cptBucket;                     //< leaky bucket
-
+    private static int rmbBucket = 0;
+    private static int rmbInterval = 0;
 
 
-    // --------------------- <interfaces> ---------------------
 
+    // ----- interfaces -----
 
-    // enable / disable routine of autoclicker
-    public static void toggleClicker() {
-        // safety check
-        if(MinecraftClient.getInstance().player == null) return;
-
-        // toggle global variable used inside tick event
-        enabled = !enabled;
-
-        if (enabled) {
-            enableClicker();
-        } else {
-            disableClicker();
-        }
-    }
-
-    // init routine of autoclicker, registers clicker event
     public static void init() {
-        // register autoclicker event
         ClientTickEvents.END_CLIENT_TICK.register(AutoClicker::execute);
     }
 
+    public static void toggleClicker() {
+
+        // safety
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if(player == null) return;
+
+        // toggle
+        enabled = !enabled;
+
+        // start/stop execute
+        if (enabled) {
+            enableClicker(player);
+        } else {
+            disableClicker(player);
+        }
+    }
 
 
 
-    // --------------------- <autoclicker logic> ---------------------
 
-    public static void disableClicker() {
-        // tracking
+    // ----- auto clicker code -----
+
+    public static void disableClicker(ClientPlayerEntity player) {
         enabled = false;
-
-        // display mode change
-        MinecraftClient.getInstance().player.sendMessage(Text.literal(EasyClicker.MOD_ID + " disabled").formatted(Formatting.BOLD, Formatting.RED), true);
+        player.sendMessage(Text.literal(EasyClicker.MOD_ID + " disabled").formatted(Formatting.BOLD, Formatting.RED), true);
 
         // cleanup
         MinecraftClient.getInstance().options.useKey.setPressed(false);
-        cptBucket = 0;
+        rmbBucket = 0;
+        rmbInterval = 0;
     }
 
-    private static void enableClicker() {
-        // tracking
+    private static void enableClicker(ClientPlayerEntity player) {
         enabled = true;
-
-        // display mode change
-        MinecraftClient.getInstance().player.sendMessage(Text.literal(EasyClicker.MOD_ID + " enabled").formatted(Formatting.BOLD, Formatting.GREEN), true);
+        player.sendMessage(Text.literal(EasyClicker.MOD_ID + " enabled").formatted(Formatting.BOLD, Formatting.GREEN), true);
     }
 
 
     private static void execute(MinecraftClient client) {
-        // safeguard
+
+        // disabled => do nothing
         if(!enabled) return;
 
-        // safety check
+        // safety
         if (client.player == null || client.world == null || client.currentScreen != null) {
             return;
         }
 
-        // actual clicking, depending on mode
-        switch (ConfigManager.getInstance().getClickMode()) {
-            case HOLDING -> {
-                client.options.useKey.setPressed(true);
+        // rmb clicker execute
+        if(EasyClickerConfig.rmbEnabled) {
+            // delegate rmb click mode
+            switch (EasyClickerConfig.rmbMode) {
+                case HOLDING -> executeRmbHolding(client);
+                case INDIVIDUAL -> executeRmbIndividual(client);
+                case INTERVAL ->  executeRmbInterval(client);
             }
-            case INDIVIDUAL -> {
-                // make sure, use key is not pressed
-                client.options.useKey.setPressed(false);
+        }
 
-                // fill up bucket
-                cptBucket += ConfigManager.getInstance().getSpeed();
-
-                // leaky bucket algorithm
-                while(cptBucket >= 20){
-                    executeFastClick(client);
-                    cptBucket -= 20;
-                }
-            }
+        // TODO: lmb clicker execute
+        if(EasyClickerConfig.lmbEnabled) {
+            // TBD
         }
     }
 
 
-    private static void executeFastClick(MinecraftClient client) {
+    private static void executeRmbHolding(MinecraftClient client) {
+        client.options.useKey.setPressed(true);
+    }
+
+    private static void executeRmbIndividual(MinecraftClient client) {
+        client.options.useKey.setPressed(false);
+
+        // leaky bucket
+        rmbBucket += EasyClickerConfig.rmbIndividualCps;
+        while(rmbBucket >= 20){
+            artificialRightClick(client);
+            rmbBucket -= 20;
+        }
+    }
+
+    private static void executeRmbInterval(MinecraftClient client) {
+        client.options.useKey.setPressed(false);
+        // simple timer
+        if(++rmbInterval >= EasyClickerConfig.rmbIntervalTime) {
+            artificialRightClick(client);
+            rmbInterval = 0;
+        }
+    }
+
+
+
+
+
+
+
+    private static void artificialRightClick(MinecraftClient client) {
         // get what player is looking at
         HitResult target = client.crosshairTarget;
 

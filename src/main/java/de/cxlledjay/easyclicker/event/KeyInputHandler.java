@@ -1,13 +1,13 @@
 package de.cxlledjay.easyclicker.event;
 
+import de.cxlledjay.easyclicker.EasyClicker;
 import de.cxlledjay.easyclicker.clicker.AutoClicker;
-import de.cxlledjay.easyclicker.gui.MenuScreen;
+import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -29,12 +29,12 @@ public class KeyInputHandler {
             if(menu_key.wasPressed()){
                 // show menu screen
                 MinecraftClient.getInstance().setScreen(
-                        new MenuScreen()
+                        MidnightConfig.getScreen(null, EasyClicker.MOD_ID)
                 );
             }
 
             if(toggle_key.wasPressed()){
-                //call toggle easy clicker method
+                // call toggle easy clicker method
                 AutoClicker.toggleClicker();
             }
         });
