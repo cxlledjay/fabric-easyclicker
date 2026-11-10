@@ -10,7 +10,7 @@ public class EasyClickerConfig extends MidnightConfig {
     public static Comment lmbHeading;
 
     @Entry(category = "lmb")
-    public static boolean lmbEnabled = true;
+    public static boolean lmbEnabled = false;
 
 
     // ----- right click config -----
